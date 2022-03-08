@@ -1,0 +1,339 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Logros, Certificaciones, Premios, Reconocimientos, Patentes, etc.</h1>
+</div>
+
+
+<!-- Content Row -->
+
+<div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <form class="needs-validation" id="frmDataInfo" novalidate>
+                        <div class="row g-3" >
+                            <div class="col-xl-3 col-lg-6 col-sm-6">
+                                <label for="relevanciaPE" class="form-label">Relavancia PE (preguntar)*</label>
+                                <input type="text" class="form-control ValidChange" id="relevanciaPE" name="relevanciaPE" placeholder="">
+                            <!--
+                                <select class="form-control ValidChange" id="nivel" name="nivel" required>
+                                    <option value="">Elige un nivel ...</option>
+                                    <option value="L">L - Licenciatura</option>
+                                    <option value="E">E - Especialidad</option>
+                                    <option value="M">M - Maestria</option>
+                                    <option value="D">D - Doctorado</option>
+                                </select>
+                            -->
+                                <input class="form-control" id="keyProfesor" name="keyProfesor" type="hidden">
+                                <input class="form-control" id="identificador" name="identificador" type="hidden">
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-sm-6">
+                                <label for="autores" class="form-label">Autores *</label>
+                                <input type="text" class="form-control ValidChange" id="autores" name="autores" placeholder="">
+                                <div class="invalid-feedback">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-sm-6">
+                                <label for="lugarRealizo" class="form-label">Lugar donde se realizo *</label>
+                                <input type="text" class="form-control ValidChange" id="lugarRealizo" name="lugarRealizo" placeholder="">
+                                <div class="invalid-feedback">
+                                    El titulo es obligatorio
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-sm-6">
+                                <label for="fechaRealizo" class="form-label">Fecha en que se Relizo *</label>
+                                <input type="text" class="form-control ValidChange" id="fechaRealizo" name="fechaRealizo">
+                                <script type="text/javascript">
+                                    $(function() {
+                                        $('input[name="fechaRealizo"]').daterangepicker({
+                                            singleDatePicker: true,
+                                            showDropdowns: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea id="descripcion" name="descripcion" class="form-control ValidCahnge" rows="2" cols="50"></textarea>                     
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-xl-8 col-lg-6 col-md-6"></div>
+                            <div class="col-xl-4 col-lg-6 col-md-6" style="margin-top: 0.25rem; font-size: .875em; color: #dc3545;">
+                                <p class="text-danger text-right">los campos con (*) son obligatorios</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xl-8 col-lg-4 col-md-0 col-sm-12"></div>
+                            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
+                                <button class="w-100 btn btn-primary btn-lg" id="actualizaCtn" type="submit" style="display: none;">Actualizar</button>
+                            </div>
+                            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
+                                <button class="w-100 btn btn-success btn-lg" id="agregarCtn" type="submit" disabled>Agregar</button>
+                                <button class="w-100 btn btn-danger btn-lg" id="CancelarCtn" type="button" onclick="resetFormulario()" style="display: none;">Cancelar</button>
+                            </div>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Content Column -->
+    <div class="col-lg-12 mb-4">
+
+        <!-- Project Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>relevancia PE</th>
+                                <th>Autores</th>
+                                <th>Lugar</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>#</th>
+                                <th>relevancia PE</th>
+                                <th>Autores</th>
+                                <th>Lugar</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody id="ctnBody">
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+        
+
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+ 
+    $(document).ready(function() {
+        var contador = 0;
+
+        if(profesionalObj.profesionalKey > 0){
+            if(profesionalObj.logrosProfesionales.length == 0){
+                consultaProductoById();   
+            }else{
+                initData();
+            }                 
+        }              
+
+        $("#agregarCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/logro_profesional/registraLogro.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.logrosProfesionales = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            $("#frmDataInfo")[0].reset();
+            return false;
+        });
+
+        $("#actualizaCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/logro_profesional/actualizaLogro.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.logrosProfesionales = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            resetFormulario();
+
+            return false;
+        });
+
+        function consultaProductoById(){
+            $.ajax({
+                method: "POST",
+                url: "controller/logro_profesional/consultaLogro.php"
+            })
+            .done(function( result ) {
+                if(result.status == "success"){                        
+                    profesionalObj.logrosProfesionales = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            return false;
+        }
+
+        function initData(){
+            $("#ctnBody").empty();
+            var tr = "";
+            $.each(profesionalObj.logrosProfesionales , function(key, logro){
+                tr += "<tr>"+
+                            "<td>#</td>"+
+                            "<td>Relevancia PE</td>"+
+                            "<td>"+logro.autores+"</td>"+
+                            "<td>"+logro.lugar_realizo+"</td>"+
+                            "<td>"+logro.fecha_realizo+"</td>"+
+                            "<td>"+logro.descripcion+"</td>"+
+                            "<td>"+
+                                "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                            "</td>"+
+                        "</tr>";
+            });
+            $("#ctnBody").append(tr);
+
+            if(contador == 0){
+                $('#dataTable').DataTable({
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registro por hoja",
+                        "zeroRecords": "No hay registros que coincidan",
+                        "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "No records available",
+                        "infoFiltered": "(filtrado de _MAX_ total registros)"
+                    },
+                    "lengthMenu": [[5, 10, 20, 25], [5, 10, 20, 25]]
+                });
+
+                contador++;
+            }
+            
+        }
+
+        $(".ValidChange").change(function(){
+            var ilegalElement = 0;
+            $(".ValidChange").each(function() {
+                console.log($(this));
+                console.log($(this).val());
+                if($(this).val() == ""){
+                    ilegalElement++;                            
+                }
+            });
+            var disabled = (ilegalElement > 0)? true: false;
+            $("#agregarCtn").prop( "disabled", disabled );
+        });
+
+
+    });
+
+    function eliminaRow(idKey){
+        var listDatos = profesionalObj.logrosProfesionales;
+        var item = listDatos[idKey];
+        
+        $("#keyProfesor").val(profesionalObj.profesionalKey);
+        $.ajax({
+            method: "POST",
+            url: "controller/logro_profesional/eliminaLogro.php",
+            data: { "identificador": item.logro_key,}
+        })
+        .done(function( result ) {
+            if(result.status == "success"){
+                $("#ctnBody").empty();
+                var num = 1;
+                $.each(result.data , function(key, logro){
+                    var tr = "<tr>"+
+                            "<td>Relevancia PE</td>"+
+                            "<td>"+logro.autores+"</td>"+
+                            "<td>"+logro.lugar_realizo+"</td>"+
+                            "<td>"+logro.fecha_realizo+"</td>"+
+                            "<td>"+logro.descripcion+"</td>"+
+                            "<td>"+
+                                "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                            "</td>"+
+                        "</tr>";
+                    $("#ctnBody").append(tr);
+                });
+            }
+        })
+        .fail(function(jqXHR, textStatus){
+            alert( "Peticion fallida failed: " + textStatus );
+        });
+
+        return false;
+        
+    }
+
+    function actualizaRow(idKey){
+        var listDatos = profesionalObj.logrosProfesionales;
+        var item = listDatos[idKey];
+
+        $("#identificador").val(item.logro_key);
+        //$("#relevanciaPE").val(item.relevanciaPE);
+        $("#autores").val(item.autores);
+        $("#lugarRealizo").val(item.lugar_realizo);
+        $("#fechaRealizo").val(item.fecha_realizo);
+        $("#descripcion").val(item.descripcion);
+
+        $("#agregarCtn").css("display", "none");
+        $("#actualizaCtn").css("display", "block");
+        $("#CancelarCtn").css("display", "block");
+        
+    }
+
+    function resetFormulario(){
+        $("#frmDataInfo")[0].reset();
+
+        $("#agregarCtn").css("display", "block");
+        $("#actualizaCtn").css("display", "none");
+        $("#CancelarCtn").css("display", "none");
+    }
+</script>

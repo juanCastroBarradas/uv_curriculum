@@ -1,0 +1,250 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Datos Personales</h1>
+</div>
+
+
+<!-- Content Row -->
+
+<div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <form class="needs-validation" id="frmDataInfo" novalidate>
+                        <div class="row g-3" >
+                            <div class="col-xl-2 col-md-4 col-sm-4">
+                                <label for="noProfesor" class="form-label">ID profesor *</label>
+                                <input type="text" class="form-control ValidChange" id="noProfesor" name="noProfesor" placeholder="" value="" required readonly>
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="apPaterno" class="form-label">Apellido Paterno *</label>
+                                <input type="text" class="form-control ValidChange" id="apPaterno" name="apPaterno" placeholder="" value="" required>
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="apMaterno" class="form-label">Apellido Materno</label>
+                                <input type="text" class="form-control" id="apMaterno" name="apMaterno" placeholder="" value="" required>
+                            </div>
+                            <div class="col-xl-4 col-sm-8">
+                                <label for="nombre" class="form-label">Nombre(s) *</label>
+                                <input type="text" class="form-control ValidChange" id="nombre" name="nombre" placeholder="" value="" required>
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="dateOfBirth" class="form-label">Fecha Nacimiento *</label>
+                                <input type="text" name="dateOfBirth" value="" placeholder="formato: dd/mm/aaaa" class="form-control ValidChange" id="fechaNacimiento">
+                                <script type="text/javascript">
+                                    $(function() {
+                                        $('input[name="dateOfBirth"]').daterangepicker({
+                                            singleDatePicker: true,
+                                            showDropdowns: true,
+                                            minYear: parseInt((moment().format('YYYY')-70),10),
+                                            maxYear: parseInt(moment().format('YYYY')-18,10)
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="feContratacion" class="form-label">Fecha de contratacion *</label>
+                                <input type="text" name="feContratacion" value="" placeholder="formato: dd/mm/aaaa" class="form-control ValidChange" id="fechaContratacion">
+                                <script type="text/javascript">
+                                    $(function() {
+                                        $('input[name="feContratacion"]').daterangepicker({
+                                            singleDatePicker: true,
+                                            showDropdowns: true,
+                                            minYear: parseInt((moment().format('YYYY')-70),10),
+                                            maxYear: parseInt(moment().format('YYYY'),10)
+                                        });
+                                    });
+                                </script>
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="antiguedad" class="form-label">Antiguedad (años) *</label>
+                                <input type="number" class="form-control ValidChange" id="antiguedad" name="antiguedad" placeholder="" required>                        
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="nombramiento" class="form-label">Nombramiento actual *</label>
+                                <select class="form-control ValidChange" id="nombramiento" name="nombramiento" required>
+                                    <option value="">Elegir opcion ...</option>
+                                    <option value="1">Profesor de tiempo completo</option>
+                                    <option value="2">Profesor de medio tiempo</option>
+                                    <option value="3">Profesor por horas</option>
+                                    <option value="4">Técnico academico</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-sm-4">
+                                <label for="tipoContratacion" class="form-label">Estatus de contratación *</label>
+                                <select class="form-control ValidChange" id="tipoContratacion" name="tipoContratacion" required>
+                                    <option value="">Elegir opcion ...</option>
+                                    <option value="1">Base</option>
+                                    <option value="2">Provisional</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6"></div>
+                            <div class="col-sm-6" style="margin-top: 0.25rem; font-size: .875em; color: #dc3545;">
+                                <p class="text-danger text-right">los campos con (*) son obligatorios</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <button class="w-100 btn btn-success btn-lg" id="actualizarCtn" type="submit" disabled>Guardar</button>
+                            </div>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#feNacimiento").val("");
+        if(profesionalObj.noProfesor > 0){
+            dataInit();
+            $("#actualizarCtn").show();
+        }else{
+            consultarProfesor();
+        }
+
+        $("#agregarCtn").click(function(){
+            $.ajax({
+                method: "POST",
+                url: "controller/info_personal/registraPersonal.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){                        
+                    profesionalObj.profesionalKey = result.data.persona_key;
+                    profesionalObj.noProfesor = result.data.noProfesor;
+                    if(profesionalObj.noProfesor > 0){
+                        $(".disabledBtn").prop('disabled', false);
+                    }
+                }else{ // si el No de trabajador ya se encuentra registrado
+                    profesionalObj.profesionalKey = result.data.persona_key;
+                    profesionalObj.noProfesor = result.data.noProfesor;
+                    if(profesionalObj.noProfesor > 0){
+                        alert(result.msj);
+                        $(".disabledBtn").prop('disabled', false);
+                    }else{
+                        alert("no se puedo obtner el registro del profesor")
+                    }
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            return false;
+        });
+
+        $("#actualizarCtn").click(function(){
+            $.ajax({
+                method: "POST",
+                url: "controller/info_personal/actualizaPersonal.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){                        
+                    
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            return false;
+        });
+
+        function consultarProfesor(){
+            $.ajax({
+                method: "POST",
+                url: "controller/info_personal/consultaPersonal.php"
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    var profesional = result.data;
+                    //damos valor a nuestro objeto
+                    profesionalObj.profesionalKey = parseInt(profesional.persona_key);
+                    profesionalObj.apPaterno = profesional.apPaterno;
+                    profesionalObj.apMaterno = profesional.apMaterno;
+                    profesionalObj.nombre = profesional.nombre;
+                    profesionalObj.noProfesor = parseInt(profesional.noProfesor);
+                    profesionalObj.fechaNacimiento = profesional.fechaNacimiento;
+                    profesionalObj.nombramiento = profesional.nombramiento;
+                    profesionalObj.antiguedad = parseInt(profesional.antiguedad);
+                    profesionalObj.fechaContratacion = profesional.fechaContratacion;
+                    profesionalObj.tipoContratacion = profesional.tipoContratacion;
+                    
+                    if(profesionalObj.noProfesor > 0){
+                        dataInit();
+                        $(".disabledBtn").prop('disabled', false);
+                        $("#actualizarCtn").show();
+                    }
+                }else{
+                    alert(result.msj);
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+        }
+
+        $(".ValidChange").change(function(){
+            var ilegalElement = 0;
+            $(".ValidChange").each(function() {
+                if($(this).val() == ""){
+                    ilegalElement++;                            
+                }
+            });
+            if($("#feNacimiento").val() != ""){
+                var edad = calcularEdad($("#feNacimiento").val());
+                if(edad < 18){
+                    c++;
+                }
+            }
+
+            var disabled = (ilegalElement > 0)? true: false;
+            $("#actualizarCtn").prop( "disabled", disabled );
+        });
+
+        function calcularEdad(fecha) {
+            var hoy = new Date();
+            var cumpleanos = new Date(fecha);
+            var edad = hoy.getFullYear() - cumpleanos.getFullYear();
+            var m = hoy.getMonth() - cumpleanos.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+                edad--;
+            }
+
+            return edad;
+        }
+
+        function dataInit(){
+            $("#apPaterno").val(profesionalObj.apPaterno);
+            $("#apMaterno").val(profesionalObj.apMaterno);
+            $("#nombre").val(profesionalObj.nombre);
+            $("#noProfesor").val(profesionalObj.noProfesor);
+            $("#fechaNacimiento").val(profesionalObj.fechaNacimiento);
+            $("#nombramiento").val(profesionalObj.nombramiento);
+            $("#antiguedad").val(profesionalObj.antiguedad);
+            $("#fechaContratacion").val(profesionalObj.fechaContratacion);
+            $("#tipoContratacion").val(profesionalObj.tipoContratacion);
+        }
+
+    });
+</script>

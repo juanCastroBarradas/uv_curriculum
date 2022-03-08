@@ -1,0 +1,336 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Gestión académica</h1>
+</div>
+
+
+<!-- Content Row -->
+
+<div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <form class="needs-validation" id="frmDataInfo" novalidate>
+                        <div class="row g-3" >
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                <label for="puesto" class="form-label">actividad o puesto</label>
+                                <input type="text" class="form-control ValidChange" id="puesto" name="puesto" placeholder="">
+                                <input class="form-control" id="keyProfesor" name="keyProfesor" type="hidden">
+                                <input class="form-control" id="identificador" name="identificador" type="hidden">
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                                <label for="institucion" class="form-label">Institucion</label>
+                                <input type="text" class="form-control ValidChange" id="institucion" name="institucion" placeholder="">
+                                <div class="invalid-feedback">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                                <label for="pais" class="form-label">fecha de inicio</label>
+                                <input type="text" id="fechaInicio" name="fechaInicio" class="form-control ValidChange" value="">
+                                <script type="text/javascript">
+                                    $(function() {
+                                        $('input[name="fechaInicio"]').daterangepicker({
+                                            singleDatePicker: true,
+                                            showDropdowns: true,
+                                            minYear: parseInt((moment().format('YYYY')-50),10),
+                                            maxYear: parseInt(moment().format('YYYY'),10)
+                                        });
+                                    });
+                                </script>
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                                <label for="pais" class="form-label">fecha de fin</label>
+                                <input type="text" id="fechaFinal" name="fechaFinal" class="form-control ValidChange" value="">
+                                <script type="text/javascript">
+                                    $(function() {
+                                        $('input[name="fechaFinal"]').daterangepicker({
+                                            singleDatePicker: true,
+                                            showDropdowns: true,
+                                            minYear: parseInt((moment().format('YYYY')-50),10),
+                                            maxYear: parseInt(moment().format('YYYY'),10)
+                                        });
+                                    });
+                                </script>
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3" style="padding-top: 2%;">
+                                <input type="checkbox" class=" form-check-input" id="actual" name="actual" value="1">
+                                <label class="form-check-label" for="same-address">Actual</label>
+                            </div>
+                        </div>
+
+
+                        <div class="row g-3">
+                            <div class="col-xl-8 col-lg-8"></div>
+                            <div class="col-xl-4 col-lg-4" style="margin-top: 0.25rem; font-size: .875em; color: #dc3545;">
+                                <p class="text-danger text-right">los campos con (*) son obligatorios</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xl-8 col-lg-8"></div>
+                            <div class="col-xl-2 col-lg-2">
+                                <button class="w-100 btn btn-primary btn-lg" id="actualizaCtn" type="submit" style="display: none;">Actualizar</button>
+                            </div>
+                            <div class="col-xl-2 col-lg-2">
+                                <button class="w-100 btn btn-success btn-lg" id="agregarCtn" type="submit" disabled>Agregar</button>
+                                <button class="w-100 btn btn-danger btn-lg" id="CancelarCtn" type="button" onclick="resetFormulario()" style="display: none;">Cancelar</button>
+                            </div>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Content Column -->
+    <div class="col-lg-12 mb-4">
+
+        <!-- Project Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Actividad o puesto</th>
+                                <th>Instituto</th>
+                                <th>Fecha inicio</th>
+                                <th>Fecha fin</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>#</th>
+                                <th>Actividad o puesto</th>
+                                <th>Instituto</th>
+                                <th>Fecha inicio</th>
+                                <th>Fecha fin</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody id="ctnBody">
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+        
+
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+ 
+    $(document).ready(function() {
+        var contador = 0;
+
+        if(profesionalObj.profesionalKey > 0){
+            if(profesionalObj.gestionAcademica.length == 0){
+                consultaGestionById();   
+            }else{
+                initData();
+            }                 
+        }               
+
+        $("#agregarCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/gestion_academica/registraGestionAcademica.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.gestionAcademica = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+            resetFormulario();
+            return false;
+        });
+
+        $("#actualizaCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/formacion_academica/actualizaFormacion.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.formacionAcademica = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            resetFormulario();
+
+            return false;
+        });
+
+        function consultaGestionById(){
+            $.ajax({
+                method: "POST",
+                url: "controller/gestion_academica/consultaGestionAcademica.php"
+            })
+            .done(function( result ) {
+                if(result.status == "success"){                        
+                    profesionalObj.gestionAcademica = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+            return false;
+        }
+
+        function initData(){
+            $("#ctnBody").empty();
+            var tr = "";
+            $.each(profesionalObj.gestionAcademica , function(key, gestion){
+                tr += "<tr>"+
+                            "<td>#</td>"+
+                            "<td>"+gestion.puesto+"</td>"+
+                            "<td>"+gestion.instituto+"</td>"+
+                            "<td>"+gestion.fecha_inicio+"</td>"+
+                            "<td>"+((gestion.actual == 1)? "Actual":gestion.fecha_fin)+"</td>"+
+                            "<td>"+
+                                "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                            "</td>"+
+                        "</tr>";
+            });
+            $("#ctnBody").append(tr);
+
+            if(contador == 0){
+                $('#dataTable').DataTable({
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registro por hoja",
+                        "zeroRecords": "No hay registros que coincidan",
+                        "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "No records available",
+                        "infoFiltered": "(filtrado de _MAX_ total registros)"
+                    },
+                    "lengthMenu": [[5, 10, 20, 25], [5, 10, 20, 25]]
+                });
+
+                contador++;
+            }
+            
+        }
+
+        $(".ValidChange").change(function(){
+            var ilegalElement = 0;
+            $(".ValidChange").each(function() {
+                console.log($(this));
+                console.log($(this).val());
+                if($(this).val() == ""){
+                    ilegalElement++;                            
+                }
+            });
+            ilegalElement -= ($('#actual').is(':checked'))? 1:0;
+            var disabled = (ilegalElement > 0)? true: false;
+            $("#agregarCtn").prop( "disabled", disabled );
+        });
+
+
+    });
+
+    function eliminaRow(idKey){
+        var listDatos = profesionalObj.gestionAcademica;
+        var item = listDatos[idKey];
+        
+        $("#keyProfesor").val(profesionalObj.profesionalKey);
+        $.ajax({
+            method: "POST",
+            url: "controller/gestion_academica/eliminaGestionAcademica.php",
+            data: { "gestion_key": item.gestion_key, "persona_fkey": item.persona_fkey }
+        })
+        .done(function( result ) {
+            console.log(result.status);
+            if(result.status == "success"){
+                $("#ctnBody").empty();
+                var num = 1;
+                $.each(result.data , function(key, gestion){
+                    var tr = "<tr>"+
+                                "<th>"+(num++)+"</th>"+
+                                "<td>"+gestion.puesto+"</td>"+
+                                "<td>"+gestion.instituto+"</td>"+
+                                "<td>"+gestion.fecha_inicio+"</td>"+
+                                "<td>"+((gestion.actual == 1)? "Actual":gestion.fecha_fin)+"</td>"+
+                                "<td>"+
+                                    "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                    "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                                "</td>"+
+                            "</tr>";
+                    $("#ctnBody").append(tr);
+                });
+            }
+        })
+        .fail(function(jqXHR, textStatus){
+            alert( "Peticion fallida failed: " + textStatus );
+        });
+        return false;
+    }
+
+    function actualizaRow(idKey){
+        $("#frmDataInfo")[0].reset();
+        $('#actual').removeAttr('checked');
+        var listDatos = profesionalObj.gestionAcademica;
+        var item = listDatos[idKey];
+
+        $("#identificador").val(item.gestion_key);
+        $("#puesto").val(item.puesto);
+        $("#titulo").val(item.titulo);
+        $("#institucion").val(item.instituto);
+        $("#fechaInicio").val(item.fecha_inicio);
+        if (item.actual == 1 || item.actual == '1') {
+            $('#actual').attr('checked', true);
+        } else {
+            $("#fechaFinal").val(item.fecha_fin);
+        }
+        $("#agregarCtn").css("display", "none");
+        $("#actualizaCtn").css("display", "block");
+        $("#CancelarCtn").css("display", "block");
+    }
+
+    function resetFormulario(){
+        $("#frmDataInfo")[0].reset();
+
+        $("#agregarCtn").css("display", "block");
+        $("#actualizaCtn").css("display", "none");
+        $("#CancelarCtn").css("display", "none");
+    }
+</script>

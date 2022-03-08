@@ -1,0 +1,338 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Actualización docente</h1>
+</div>
+
+
+<!-- Content Row -->
+
+<div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <form class="needs-validation" id="frmDataInfo" novalidate>
+                        <div class="row g-3" >
+                            <div class="col-2">
+                                <label for="pais" class="form-label">Tipo*</label>
+                                <select class="form-control ValidChange" id="tipo" name="tipo" required>
+                                    <option value="">Elige el tipo de actualizacion ...</option>
+                                    <option value="1">Capacitación docente</option>
+                                    <option value="2">Actualización disiplinar</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="tipo" class="form-label">titulo*</label>
+                                <input type="text" class="form-control ValidChange" id="titulo" name="titulo" placeholder="">
+                                <input class="form-control" id="keyProfesor" name="keyProfesor" type="hidden">
+                                <input class="form-control" id="identificador" name="identificador" type="hidden">
+                            </div>
+                            <div class="col-2">
+                                <label for="institucion" class="form-label">Institucion*</label>
+                                <input type="text" class="form-control ValidChange" id="institucion" name="institucion" placeholder="">
+                                <div class="invalid-feedback">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <label for="pais" class="form-label">Pais*</label>
+                                <input type="text" class="form-control ValidChange" id="pais" name="pais">
+                                <div class="invalid-feedback">
+                                    por favor capture su fecha de nacimiento.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-2">
+                                <label for="yearObtencion" class="form-label">Año de obtención*</label>
+                                <input type="number" class="form-control ValidChange" id="yearObtencion" name="yearObtencion" placeholder="" required>
+                            </div>
+                            <div class="col-2">
+                                <label for="nhoras" class="form-label">No. Horas*</label>
+                                <input type="number" class="form-control ValidChange" id="nhoras" name="nhoras" placeholder="" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-8"></div>
+                            <div class="col-4" style="margin-top: 0.25rem; font-size: .875em; color: #dc3545;">
+                                <p class="text-danger text-right">los campos con (*) son obligatorios</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-2">
+                                <button class="w-100 btn btn-primary btn-lg" id="actualizaCtn" type="submit" style="display: none;">Actualizar</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="w-100 btn btn-success btn-lg" id="agregarCtn" type="submit" disabled>Agregar</button>
+                                <button class="w-100 btn btn-danger btn-lg" id="CancelarCtn" type="button" onclick="resetFormulario()" style="display: none;">Cancelar</button>
+                            </div>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Content Column -->
+    <div class="col-lg-12 mb-4">
+
+        <!-- Project Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Titulo</th>
+                                <th>Instituto</th>
+                                <th>Pais</th>
+                                <th>Año de obtención</th>
+                                <th>No. horas</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Titulo</th>
+                                <th>Instituto</th>
+                                <th>Pais</th>
+                                <th>Año de obtención</th>
+                                <th>No. horas</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody id="ctnBody">
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+        
+
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+ 
+    $(document).ready(function() {
+        var contador = 0;
+
+        if(profesionalObj.profesionalKey > 0){
+            if(profesionalObj.capacitacionDocente.length == 0){
+                consultaCapacitacionById();   
+            }else{
+                initData();
+            }                 
+        }              
+
+        $("#agregarCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/actualizacion_docente/registraCapacitacion.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.capacitacionDocente = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            $("#frmDataInfo")[0].reset();
+            
+            return false;
+        });
+
+        $("#actualizaCtn").click(function(){
+            $("#keyProfesor").val(profesionalObj.profesionalKey);
+            $.ajax({
+                method: "POST",
+                url: "controller/actualizacion_docente/actualizarCapacitacion.php",
+                data: $("#frmDataInfo").serialize()
+            })
+            .done(function( result ) {
+                if(result.status == "success"){
+                    profesionalObj.capacitacionDocente = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            resetFormulario();
+
+            return false;
+        });
+
+        function consultaCapacitacionById(){
+            $.ajax({
+                method: "POST",
+                url: "controller/actualizacion_docente/consultaCapacitacion.php"
+            })
+            .done(function( result ) {
+                if(result.status == "success"){                        
+                    profesionalObj.capacitacionDocente = result.data;
+                    initData();
+                }
+            })
+            .fail(function(jqXHR, textStatus){
+                alert( "Peticion fallida failed: " + textStatus );
+            });
+
+            return false;
+        }
+
+        function initData(){
+            $("#ctnBody").empty();
+            var tr = "";
+            $.each(profesionalObj.capacitacionDocente , function(key, formacion){
+                var titulo = formacion.tipo == 1? "Capacitación docente":"Actualización disiplinar";
+                tr += "<tr>"+
+                            "<th>#</th>"+
+                            "<td>"+titulo+"</td>"+
+                            "<td>"+formacion.titulo+"</td>"+
+                            "<td>"+formacion.instituto+"</td>"+
+                            "<td>"+formacion.pais+"</td>"+
+                            "<td>"+formacion.yearObtencion+"</td>"+
+                            "<td>"+formacion.noHoras+"</td>"+
+                            "<td>"+
+                                "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                            "</td>"+
+                        "</tr>";
+            });
+            $("#ctnBody").append(tr);
+
+            if(contador == 0){
+                $('#dataTable').DataTable({
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registro por hoja",
+                        "zeroRecords": "No hay registros que coincidan",
+                        "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "No records available",
+                        "infoFiltered": "(filtrado de _MAX_ total registros)"
+                    },
+                    "lengthMenu": [[5, 10, 20, 25], [5, 10, 20, 25]]
+                });
+
+                contador++;
+            }
+            
+        }
+
+        $(".ValidChange").change(function(){
+            var ilegalElement = 0;
+            $(".ValidChange").each(function() {
+                if($(this).val() == ""){
+                    ilegalElement++;                            
+                }
+            });
+            var disabled = (ilegalElement > 0)? true: false;
+            $("#agregarCtn").prop( "disabled", disabled );
+        });
+
+
+    });
+
+    function eliminaRow(idKey){
+        var listDatos = profesionalObj.capacitacionDocente;
+        var item = listDatos[idKey];
+        
+        $("#keyProfesor").val(profesionalObj.profesionalKey);
+        $.ajax({
+            method: "POST",
+            url: "controller/actualizacion_docente/eliminaCapacitacion.php",
+            data: { "capacitacion_key": item.capacitacion_key, "persona_fkey": item.persona_fkey }
+        })
+        .done(function( result ) {
+            console.log(result.status);
+            if(result.status == "success"){
+                $("#ctnBody").empty();
+                var num = 1;
+                $.each(result.data , function(key, formacion){
+                    var titulo = formacion.tipo == 1? "Capacitación docente":"Actualización disiplinar";
+                    var tr = "<tr>"+
+                                "<th>"+(num++)+"</th>"+
+                                "<td>"+titulo+"</td>"+
+                                "<td>"+formacion.titulo+"</td>"+
+                                "<td>"+formacion.instituto+"</td>"+
+                                "<td>"+formacion.pais+"</td>"+
+                                "<td>"+formacion.yearObtencion+"</td>"+
+                                "<td>"+formacion.noHoras+"</td>"+
+                                "<td>"+
+                                    "<button class='btn btn-primary btn-sm' type='button' onclick='actualizaRow("+key+")'>Actualizar</button>&nbsp;"+
+                                    "<button class='btn btn-danger btn-sm' type='button' onclick='eliminaRow("+key+")'>Eliminar</button>"+
+                                "</td>"+
+                            "</tr>";
+                    $("#ctnBody").append(tr);
+                });
+            }
+        })
+        .fail(function(jqXHR, textStatus){
+            alert( "Peticion fallida failed: " + textStatus );
+        });
+
+        return false;
+        
+    }
+
+    function actualizaRow(idKey){
+        var listDatos = profesionalObj.capacitacionDocente;
+        var item = listDatos[idKey];
+
+        $("#identificador").val(item.capacitacion_key);
+        $("#tipo").val(item.tipo);
+        $("#titulo").val(item.titulo);
+        $("#institucion").val(item.instituto);
+        $("#pais").val(item.pais);
+        $("#yearObtencion").val(item.yearObtencion);
+        $("#nhoras").val(item.noHoras);
+
+        $("#agregarCtn").css("display", "none");
+        $("#actualizaCtn").css("display", "block");
+        $("#CancelarCtn").css("display", "block");
+        
+    }
+
+    function resetFormulario(){
+        $("#frmDataInfo")[0].reset();
+
+        $("#agregarCtn").css("display", "block");
+        $("#actualizaCtn").css("display", "none");
+        $("#CancelarCtn").css("display", "none");
+    }
+</script>
